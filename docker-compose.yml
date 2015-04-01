@@ -1,0 +1,13 @@
+web:
+    build: ./apache
+    ports:
+     - "80:80"
+     - "443:443"
+    volumes:
+     - ./html:/var/www/html
+    links:
+     - db
+db:
+    image: mariadb:latest
+    environment:
+     - MYSQL_ROOT_PASSWORD=asenha123
