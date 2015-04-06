@@ -7,6 +7,11 @@ web:
      - ./html:/var/www/html
     links:
      - db
+    environment:
+     - APP_NAME=dev
+     - SERVER_NAME=dev.local
+     - SERVER_ALIAS=dev.local.com
+     - DOC_ROOT=/var/www/html
 db:
     image: mariadb:latest
     environment:

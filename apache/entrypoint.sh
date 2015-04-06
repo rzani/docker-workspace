@@ -3,75 +3,75 @@ set -e
 
 # ====|==== HTTP  ====|==== #
 
-if [ -z ${SERVERNAME} ]; then
-    SERVERNAME="localhost"
+if [ -z ${SERVER_NAME} ]; then
+    SERVER_NAME="localhost"
 fi
 
-if [ -z ${SERVERALIAS} ]; then
-    SERVERALIAS="localhost"
+if [ -z ${SERVER_ALIAS} ]; then
+    SERVER_ALIAS="localhost"
 fi
 
-if [ -z ${DOCROOT} ]; then
-    DOCROOT="/var/www/html"
+if [ -z ${DOC_ROOT} ]; then
+    DOC_ROOT="/var/www/html"
 fi
 
-if [ -z ${APPNAME} ]; then
-    APPNAME="000-default"
+if [ -z ${APP_NAME} ]; then
+    APP_NAME="000-default"
 fi
 
 if [ -z ${CHARSET} ]; then
     CHARSET="UTF-8"
 fi
 
-APACHECONF="/etc/apache2/sites-available/$APPNAME.conf"
-
-if [ -f "$APACHECONF" ]; then
-    rm $APACHECONF
+# Internal duplicate confs resolution
+APACHE_CONF="/etc/apache2/sites-available/$APP_NAME.conf"
+if [ -f "$APACHE_CONF" ]; then
+    rm $APACHE_CONF
 fi
 
-cat > "$APACHECONF" <<-EOCONF
+cat > "$APACHE_CONF" <<-EOCONF
     <VirtualHost *:80>
-        ServerName ${SERVERNAME}
-        ServerAlias ${SERVERALIAS}
+        ServerName ${SERVER_NAME}
+        ServerAlias ${SERVER_ALIAS}
         AddDefaultCharset ${CHARSET}
-        DocumentRoot '${DOCROOT}'
-         <Directory '${DOCROOT}'>
+        DocumentRoot '${DOC_ROOT}'
+         <Directory '${DOC_ROOT}'>
             Options Indexes FollowSymLinks MultiViews
             AllowOverride All
         </Directory>
-        ErrorLog '/var/log/apache2/${APPNAME}_error.log'
+        ErrorLog '/var/log/apache2/${APP_NAME}_error.log'
         ServerSignature Off
-        CustomLog '/var/log/apache2/${APPNAME}_access.log' combined
+        CustomLog '/var/log/apache2/${APP_NAME}_access.log' combined
         ScriptAlias /cgi-bin/ '/usr/lib/cgi-bin'
     </VirtualHost>
 EOCONF
 
 # ====|==== HTTPS  ====|==== #
 
-if [ -z ${SERVERNAMESSL} ]; then
-    SERVERNAMESSL="localhost"
+if [ -z ${SERVER_NAME_SSL} ]; then
+    SERVER_NAME_SSL="localhost"
 fi
 
-if [ -z ${DOCROOTSSL} ]; then
-    DOCROOTSSL="/var/www/html"
+if [ -z ${DOC_ROOT_SSL} ]; then
+    DOC_ROOT_SSL="/var/www/html"
 fi
 
-APACHECONFSSL="/etc/apache2/sites-available/$APPNAME-ssl.conf"
+APACHE_CONF_SSL="/etc/apache2/sites-available/$APP_NAME-ssl.conf"
 
-if [ -f "$APACHECONFSSL" ]; then
-    rm $APACHECONFSSL
+if [ -f "$APACHE_CONF_SSL" ]; then
+    rm $APACHE_CONF_SSL
 fi
 
-cat > "$APACHECONFSSL" <<-EOCONF
+cat > "$APACHE_CONF_SSL" <<-EOCONF
     <IfModule mod_ssl.c>
         <VirtualHost *:443>
 
-            ServerName ${SERVERNAMESSL}
+            ServerName ${SERVER_NAME_SSL}
 
-            DocumentRoot '${DOCROOTSSL}'
+            DocumentRoot '${DOC_ROOT_SSL}'
 
-            ErrorLog ${APACHE_LOG_DIR}/${APPNAME}_error-ssl.log
-            CustomLog ${APACHE_LOG_DIR}/${APPNAME}_access-ssl.log combined
+            ErrorLog ${APACHE_LOG_DIR}/${APP_NAME}_error-ssl.log
+            CustomLog ${APACHE_LOG_DIR}/${APP_NAME}_access-ssl.log combined
 
             SSLEngine on
 
@@ -96,6 +96,6 @@ cat > "$APACHECONFSSL" <<-EOCONF
 EOCONF
 
 
-/usr/sbin/a2ensite "$APPNAME" && /usr/sbin/a2ensite "$APPNAME-ssl"  && service apache2 stop
+/usr/sbin/a2ensite "$APP_NAME" && /usr/sbin/a2ensite "$APP_NAME-ssl"  && service apache2 stop
 
 exec "$@"
