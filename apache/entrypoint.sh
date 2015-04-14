@@ -96,6 +96,6 @@ cat > "$APACHE_CONF_SSL" <<-EOCONF
 EOCONF
 
 
-/usr/sbin/a2ensite "$APP_NAME" && /usr/sbin/a2ensite "$APP_NAME-ssl"  && service apache2 stop
+/usr/sbin/a2ensite "$APP_NAME" && /usr/sbin/a2ensite "$APP_NAME-ssl"
 
 exec "$@"
